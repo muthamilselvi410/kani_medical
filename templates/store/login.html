@@ -1,0 +1,36 @@
+{% extends 'store/base.html' %}
+{% block title %}Login - Kani Medical1{% endblock %}
+{% block content %}
+<div style="min-height:80vh;background:linear-gradient(135deg,#e8f8fd 0%,#e8f5f0 100%);display:flex;align-items:center;padding:60px 0">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden">
+          <div style="background:linear-gradient(135deg,#17a2b8,#20c997);padding:35px;text-align:center;color:#fff">
+            <svg width="60" height="60" viewBox="0 0 60 60"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="white" stop-opacity=".8"/><stop offset="100%" stop-color="white" stop-opacity=".4"/></linearGradient></defs><path d="M30 8 C20 8 10 16 10 26 C10 40 30 52 30 52 C30 52 50 40 50 26 C50 16 40 8 30 8Z" fill="url(#g1)"/><rect x="27" y="22" width="6" height="16" rx="3" fill="white"/><rect x="22" y="27" width="16" height="6" rx="3" fill="white"/></svg>
+            <h3 class="mt-3 fw-bold">Welcome Back</h3>
+            <p style="opacity:.85">Login to your Kani Medical account</p>
+          </div>
+          <div class="card-body p-4">
+            <form method="post">{% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label fw-600">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-600">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors }}</div>{% endif %}
+              </div>
+              {% if form.non_field_errors %}<div class="alert alert-danger py-2">{{ form.non_field_errors }}</div>{% endif %}
+              <button type="submit" class="btn btn-primary-custom w-100 py-2 mt-2">Login</button>
+            </form>
+            <hr><p class="text-center mb-0">Don't have an account? <a href="/signup/" style="color:var(--primary);font-weight:600">Sign Up</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'store/base.html' %}
+{% block title %}Kani Medical - Your Trusted Online Medical Store{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container hero-content text-center py-5">
+    <h1 class="mb-3">Your Trusted Online Medical<br>Store</h1>
+    <p class="mb-4">Affordable, Genuine & Fast Delivery - Get all your healthcare needs delivered to your doorstep</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="/products/" class="btn btn-primary-custom">Shop Now</a>
+      <a href="/products/" class="btn btn-outline-custom">Explore Categories</a>
+    </div>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="section-title">Shop by Categories</h2>
+    <p class="section-sub">Find medicines and health products by category</p>
+    {% if categories %}
+    <div class="row g-3">
+      {% for cat in categories %}
+      <div class="col-6 col-md-3">
+        <a href="/products/?category={{ cat.slug }}" class="category-card" style="background:{{ cat.color }}">
+          <div class="cat-icon" style="color:{{ cat.icon_color }}"><i class="{{ cat.icon }}"></i></div>
+          <div class="cat-name" style="color:{{ cat.icon_color }}">{{ cat.name }}</div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="py-5" style="background:#f8f9fa">
+  <div class="container">
+    <h2 class="section-title">Featured Products</h2>
+    <p class="section-sub">Top picks for your health needs</p>
+    <div class="row g-3">
+      {% for product in featured_products %}
+      <div class="col-6 col-md-3">
+        <div class="product-card">
+          {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}
+          <div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:3rem">💊</div>
+          {% endif %}
+          <div class="card-body">
+            <p class="product-name">{{ product.name }}</p>
+            <p style="color:#888;font-size:.8rem">{{ product.category.name }}</p>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="product-price">₹{{ product.price }}</span>
+              {% if product.original_price %}<span class="original-price">₹{{ product.original_price }}</span><span class="badge-discount">{{ product.discount_percent }}% OFF</span>{% endif %}
+            </div>
+            {% if product.requires_prescription %}<span class="badge-rx mb-2 d-inline-block">Rx Required</span>{% endif %}
+            <form method="post" action="/cart/add/{{ product.pk }}/"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+              <button type="submit" class="btn-add-cart btn">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4"><a href="/products/" class="btn btn-outline-custom">View All Products</a></div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Why Choose Us -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="section-title">Why Choose Kani Medical</h2>
+    <div class="row g-4 mt-2">
+      <div class="col-md-3"><div class="feature-card">
+        <div class="feature-icon" style="background:#d4edda"><i class="fas fa-check-circle" style="color:#28a745;font-size:1.6rem"></i></div>
+        <h5 class="fw-bold mt-2">Genuine Products</h5>
+        <p style="color:#888;font-size:.9rem">100% authentic medicines and healthcare products</p>
+      </div></div>
+      <div class="col-md-3"><div class="feature-card">
+        <div class="feature-icon" style="background:#d1ecf1"><i class="fas fa-truck" style="color:#17a2b8;font-size:1.6rem"></i></div>
+        <h5 class="fw-bold mt-2">Fast Delivery</h5>
+        <p style="color:#888;font-size:.9rem">Same day delivery in metro cities</p>
+      </div></div>
+      <div class="col-md-3"><div class="feature-card">
+        <div class="feature-icon" style="background:#fff3cd"><i class="fas fa-dollar-sign" style="color:#ffc107;font-size:1.6rem"></i></div>
+        <h5 class="fw-bold mt-2">Affordable Prices</h5>
+        <p style="color:#888;font-size:.9rem">Best prices with regular discounts</p>
+      </div></div>
+      <div class="col-md-3"><div class="feature-card">
+        <div class="feature-icon" style="background:#f3d6f5"><i class="fas fa-headset" style="color:#9b59b6;font-size:1.6rem"></i></div>
+        <h5 class="fw-bold mt-2">24/7 Support</h5>
+        <p style="color:#888;font-size:.9rem">Round the clock customer assistance</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Customer Reviews -->
+<section class="py-5" style="background:#f8f9fa">
+  <div class="container">
+    <h2 class="section-title">Customer Reviews</h2>
+    <p class="section-sub">What our customers say about us</p>
+    <div class="row g-4">
+      {% if reviews %}
+        {% for review in reviews %}
+        <div class="col-md-4">
+          <div class="review-card">
+            <div class="text-center mb-3">
+              <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#17a2b8,#20c997);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:#fff;font-weight:700;font-size:1.2rem">{{ review.user.first_name|first|default:review.user.username|first }}</div>
+              <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+              <div class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+            </div>
+            <p style="color:#555;font-size:.9rem;text-align:center">"{{ review.comment }}"</p>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <div class="col-md-4"><div class="review-card text-center">
+        <div style="width:60px;height:60px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:#fff;font-size:1.2rem">S</div>
+        <strong>Sarah Johnson</strong><div class="stars">★★★★★</div>
+        <p style="color:#555;font-size:.9rem;margin-top:10px">"Excellent service and genuine products. Fast delivery and great customer support. Highly recommended!"</p>
+      </div></div>
+      <div class="col-md-4"><div class="review-card text-center">
+        <div style="width:60px;height:60px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:#fff;font-size:1.2rem">M</div>
+        <strong>Michael Chen</strong><div class="stars">★★★★★</div>
+        <p style="color:#555;font-size:.9rem;margin-top:10px">"Best prices in the market with authentic medicines. The website is easy to navigate and ordering is simple."</p>
+      </div></div>
+      <div class="col-md-4"><div class="review-card text-center">
+        <div style="width:60px;height:60px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:#fff;font-size:1.2rem">E</div>
+        <strong>Emma Davis</strong><div class="stars">★★★★★</div>
+        <p style="color:#555;font-size:.9rem;margin-top:10px">"Trusted pharmacy with professional service. They have everything I need for my family's healthcare needs."</p>
+      </div></div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="py-5">
+  <div class="container" style="max-width:800px">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q"><span>▼ Are all medicines genuine and FDA approved?</span></div>
+      <div class="faq-answer open">Yes, all our medicines are sourced directly from authorized distributors and are FDA approved with proper certifications.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span><span class="faq-icon">►</span> How long does delivery take?</span></div>
+      <div class="faq-answer">We offer same-day delivery in metro cities and 2-3 business days for other locations. Express delivery options are also available.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span><span class="faq-icon">►</span> Can I return medicines if they're damaged?</span></div>
+      <div class="faq-answer">Yes, we have a hassle-free return policy. Contact us within 24 hours of delivery for damaged or incorrect products.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span><span class="faq-icon">►</span> Do you require a prescription for all medicines?</span></div>
+      <div class="faq-answer">Only Schedule H and Schedule X drugs require a valid prescription. OTC products are available without prescriptions.</div>
+    </div>
+  </div>
+</section>
+{% endblock %}

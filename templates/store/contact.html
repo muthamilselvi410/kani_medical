@@ -1,0 +1,71 @@
+{% extends 'store/base.html' %}
+{% block title %}Contact Us - Kani Medical1{% endblock %}
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-2" style="font-size:2.2rem">Send Us a Message</h2>
+    <p class="text-center text-muted mb-5">Fill out the form below and our team will get back to you within 24 hours</p>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm" style="border-radius:20px">
+          <div class="card-body p-5">
+            <form method="post">{% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">First Name</label>
+                  {{ form.first_name }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Last Name</label>
+                  {{ form.last_name }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Email Address</label>
+                  {{ form.email }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Phone Number</label>
+                  {{ form.phone }}
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Message</label>
+                  {{ form.message }}
+                </div>
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" required id="agree">
+                    <label class="form-check-label" for="agree">I agree to the <a href="#" style="color:var(--accent)">Privacy Policy</a> and consent to the processing of my personal data for the purpose of responding to my inquiry.</label>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary-custom w-100 py-3"><i class="fas fa-paper-plane me-2"></i>Send Message</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mt-4 mt-md-0">
+        <div class="card border-0 shadow-sm mb-3" style="border-radius:16px">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-map-marker-alt text-primary me-2"></i>Visit Us</h6>
+            <p class="text-muted small mb-0">10/195, Kani Medical, Kamarajar Salai, Kurmbalaperi Vilakku, Pavoorchatram.</p>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm mb-3" style="border-radius:16px">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-phone text-primary me-2"></i>Call Us</h6>
+            <p class="text-muted small mb-0"><a href="tel:+917358812618" style="color:var(--accent)">+91 73588 12618</a></p>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm" style="border-radius:16px">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-clock text-primary me-2"></i>Working Hours</h6>
+            <p class="text-muted small mb-0">Mon - Sat: 9:00 AM - 9:00 PM<br>Sunday: 10:00 AM - 6:00 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends 'store/base.html' %}
+{% block title %}Checkout - Kani Medical{% endblock %}
+{% block content %}
+<div class="page-hero py-4"><div class="container"><h2>Checkout</h2></div></div>
+<div class="container py-5">
+  <form method="post" id="checkout-form">{% csrf_token %}
+    <div class="row g-4">
+      <div class="col-lg-8">
+
+        <!-- Delivery Address -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius:16px">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="fas fa-map-marker-alt text-primary me-2"></i>Delivery Address</h5>
+            {% if addresses %}
+              {% for addr in addresses %}
+              <div class="form-check mb-3 p-3" style="background:#f8f9fa;border-radius:12px;border:2px solid {% if forloop.first %}#17a2b8{% else %}#eee{% endif %}">
+                <input class="form-check-input" type="radio" name="address_id" value="{{ addr.pk }}" {% if forloop.first %}checked{% endif %} id="addr{{ addr.pk }}">
+                <label class="form-check-label" for="addr{{ addr.pk }}">
+                  <strong>{{ addr.full_name }}</strong> | {{ addr.phone }}<br>
+                  {{ addr.address_line1 }}{% if addr.address_line2 %}, {{ addr.address_line2 }}{% endif %}<br>
+                  {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                </label>
+              </div>
+              {% endfor %}
+              <hr>
+              <p class="fw-semibold mb-2">Or add new address:</p>
+            {% endif %}
+            <div class="row g-3">
+              {% for field in address_form %}
+              <div class="col-md-6"><label class="form-label fw-semibold small">{{ field.label }}</label>{{ field }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="card border-0 shadow-sm" style="border-radius:16px">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="fas fa-credit-card text-primary me-2"></i>Payment Method</h5>
+            <div class="row g-3 mb-3">
+
+              <!-- COD -->
+              <div class="col-md-4">
+                <label class="pay-label" id="lbl-cod" onclick="selectPayment('cod',this)">
+                  <input type="radio" name="payment_method" value="cod" checked style="display:none">
+                  <i class="fas fa-money-bill-wave" style="font-size:1.5rem;color:#28a745"></i>
+                  <div class="fw-bold mt-1">Cash on Delivery</div>
+                </label>
+              </div>
+
+              <!-- UPI -->
+              <div class="col-md-4">
+                <label class="pay-label" id="lbl-upi" onclick="selectPayment('upi',this)">
+                  <input type="radio" name="payment_method" value="upi" style="display:none">
+                  <i class="fas fa-mobile-alt" style="font-size:1.5rem;color:#17a2b8"></i>
+                  <div class="fw-bold mt-1">UPI Payment</div>
+                </label>
+              </div>
+
+              <!-- Online -->
+              <div class="col-md-4">
+                <label class="pay-label" id="lbl-online" onclick="selectPayment('online',this)">
+                  <input type="radio" name="payment_method" value="online" style="display:none">
+                  <i class="fas fa-credit-card" style="font-size:1.5rem;color:#6f42c1"></i>
+                  <div class="fw-bold mt-1">Online Payment</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- ── UPI Dummy Payment Panel ── -->
+            <div id="upi-panel" style="display:none">
+              <div style="background:linear-gradient(135deg,#e8f8fd,#e8f5f0);border-radius:14px;padding:24px;border:2px dashed #17a2b8">
+                <h6 class="fw-bold mb-3 text-center" style="color:#17a2b8"><i class="fas fa-mobile-alt me-2"></i>UPI Payment</h6>
+
+                <!-- QR Code dummy -->
+                <div class="text-center mb-3">
+                  <div style="display:inline-block;background:#fff;border-radius:12px;padding:14px;box-shadow:0 4px 15px rgba(0,0,0,.1)">
+                    <svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+                      <!-- QR outer border -->
+                      <rect width="150" height="150" fill="white"/>
+                      <!-- Position detection patterns -->
+                      <rect x="10" y="10" width="40" height="40" fill="none" stroke="#000" stroke-width="4"/>
+                      <rect x="17" y="17" width="26" height="26" fill="#000"/>
+                      <rect x="100" y="10" width="40" height="40" fill="none" stroke="#000" stroke-width="4"/>
+                      <rect x="107" y="17" width="26" height="26" fill="#000"/>
+                      <rect x="10" y="100" width="40" height="40" fill="none" stroke="#000" stroke-width="4"/>
+                      <rect x="17" y="107" width="26" height="26" fill="#000"/>
+                      <!-- Data modules (simulated) -->
+                      <rect x="58" y="10" width="6" height="6" fill="#000"/>
+                      <rect x="68" y="10" width="6" height="6" fill="#000"/>
+                      <rect x="78" y="10" width="6" height="6" fill="#000"/>
+                      <rect x="58" y="20" width="6" height="6" fill="#000"/>
+                      <rect x="78" y="20" width="6" height="6" fill="#000"/>
+                      <rect x="63" y="30" width="6" height="6" fill="#000"/>
+                      <rect x="73" y="30" width="6" height="6" fill="#000"/>
+                      <rect x="10" y="58" width="6" height="6" fill="#000"/>
+                      <rect x="20" y="58" width="6" height="6" fill="#000"/>
+                      <rect x="30" y="63" width="6" height="6" fill="#000"/>
+                      <rect x="10" y="73" width="6" height="6" fill="#000"/>
+                      <rect x="25" y="73" width="6" height="6" fill="#000"/>
+                      <rect x="55" y="55" width="6" height="6" fill="#000"/>
+                      <rect x="65" y="55" width="6" height="6" fill="#000"/>
+                      <rect x="75" y="55" width="6" height="6" fill="#000"/>
+                      <rect x="85" y="55" width="6" height="6" fill="#000"/>
+                      <rect x="55" y="65" width="6" height="6" fill="#000"/>
+                      <rect x="80" y="65" width="6" height="6" fill="#000"/>
+                      <rect x="60" y="75" width="6" height="6" fill="#000"/>
+                      <rect x="70" y="75" width="6" height="6" fill="#000"/>
+                      <rect x="55" y="85" width="6" height="6" fill="#000"/>
+                      <rect x="65" y="85" width="6" height="6" fill="#000"/>
+                      <rect x="85" y="85" width="6" height="6" fill="#000"/>
+                      <rect x="100" y="58" width="6" height="6" fill="#000"/>
+                      <rect x="115" y="58" width="6" height="6" fill="#000"/>
+                      <rect x="130" y="58" width="6" height="6" fill="#000"/>
+                      <rect x="105" y="68" width="6" height="6" fill="#000"/>
+                      <rect x="125" y="68" width="6" height="6" fill="#000"/>
+                      <rect x="100" y="78" width="6" height="6" fill="#000"/>
+                      <rect x="110" y="78" width="6" height="6" fill="#000"/>
+                      <rect x="130" y="78" width="6" height="6" fill="#000"/>
+                      <rect x="58" y="100" width="6" height="6" fill="#000"/>
+                      <rect x="73" y="100" width="6" height="6" fill="#000"/>
+                      <rect x="88" y="100" width="6" height="6" fill="#000"/>
+                      <rect x="63" y="110" width="6" height="6" fill="#000"/>
+                      <rect x="83" y="110" width="6" height="6" fill="#000"/>
+                      <rect x="58" y="120" width="6" height="6" fill="#000"/>
+                      <rect x="68" y="120" width="6" height="6" fill="#000"/>
+                      <rect x="88" y="120" width="6" height="6" fill="#000"/>
+                      <rect x="100" y="100" width="6" height="6" fill="#000"/>
+                      <rect x="115" y="105" width="6" height="6" fill="#000"/>
+                      <rect x="130" y="100" width="6" height="6" fill="#000"/>
+                      <rect x="105" y="115" width="6" height="6" fill="#000"/>
+                      <rect x="120" y="120" width="6" height="6" fill="#000"/>
+                      <rect x="135" y="115" width="6" height="6" fill="#000"/>
+                      <!-- UPI logo center -->
+                      <rect x="60" y="60" width="30" height="30" rx="4" fill="white" stroke="#17a2b8" stroke-width="1.5"/>
+                      <text x="75" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#17a2b8">UPI</text>
+                    </svg>
+                  </div>
+                  <p class="mt-2 mb-0" style="font-size:.8rem;color:#666">Scan with any UPI app</p>
+                </div>
+
+                <!-- UPI ID -->
+                <div class="text-center mb-3">
+                  <p class="mb-1" style="font-size:.85rem;color:#555;font-weight:600">UPI ID</p>
+                  <div style="background:#fff;border-radius:8px;padding:10px 16px;border:1.5px solid #17a2b8;display:inline-flex;align-items:center;gap:10px">
+                    <span style="font-weight:700;color:#17a2b8;letter-spacing:.5px">kanimedical@upi</span>
+                    <button type="button" onclick="copyUPI()" style="background:none;border:none;color:#17a2b8;cursor:pointer;padding:0" title="Copy">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                  </div>
+                  <span id="copy-msg" style="display:none;color:#28a745;font-size:.8rem;margin-left:8px">Copied!</span>
+                </div>
+
+                <!-- Amount -->
+                <div class="text-center mb-3" style="background:#fff;border-radius:10px;padding:12px">
+                  <p class="mb-0" style="font-size:.85rem;color:#888">Amount to Pay</p>
+                  <p class="fw-bold mb-0" style="font-size:1.6rem;color:#17a2b8">₹{{ grand_total }}</p>
+                </div>
+
+                <!-- UPI Apps -->
+                <p class="text-center mb-2" style="font-size:.82rem;color:#888">Pay using any app</p>
+                <div class="d-flex justify-content-center gap-3 mb-3 flex-wrap">
+                  <div style="text-align:center;cursor:pointer" onclick="simulateUPIApp('GPay')">
+                    <div style="width:50px;height:50px;background:linear-gradient(135deg,#4285f4,#34a853);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 4px">
+                      <span style="color:#fff;font-weight:800;font-size:.7rem">GPay</span>
+                    </div>
+                    <span style="font-size:.72rem;color:#555">Google Pay</span>
+                  </div>
+                  <div style="text-align:center;cursor:pointer" onclick="simulateUPIApp('PhonePe')">
+                    <div style="width:50px;height:50px;background:linear-gradient(135deg,#5f259f,#8b5cf6);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 4px">
+                      <span style="color:#fff;font-weight:800;font-size:.65rem">Phone<br>Pe</span>
+                    </div>
+                    <span style="font-size:.72rem;color:#555">PhonePe</span>
+                  </div>
+                  <div style="text-align:center;cursor:pointer" onclick="simulateUPIApp('Paytm')">
+                    <div style="width:50px;height:50px;background:linear-gradient(135deg,#00baf2,#0066cc);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 4px">
+                      <span style="color:#fff;font-weight:800;font-size:.7rem">Paytm</span>
+                    </div>
+                    <span style="font-size:.72rem;color:#555">Paytm</span>
+                  </div>
+                  <div style="text-align:center;cursor:pointer" onclick="simulateUPIApp('BHIM')">
+                    <div style="width:50px;height:50px;background:linear-gradient(135deg,#ff6600,#ff9900);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 4px">
+                      <span style="color:#fff;font-weight:800;font-size:.7rem">BHIM</span>
+                    </div>
+                    <span style="font-size:.72rem;color:#555">BHIM UPI</span>
+                  </div>
+                </div>
+
+                <!-- Enter UTR / Transaction ID -->
+                <div id="utr-section" style="display:none">
+                  <div style="background:#fff;border-radius:10px;padding:16px;border:1.5px solid #28a745">
+                    <p class="fw-bold mb-2" style="color:#155724"><i class="fas fa-check-circle me-2"></i>Payment Initiated via <span id="selected-app"></span></p>
+                    <label class="form-label fw-semibold small">Enter UTR / Transaction ID</label>
+                    <input type="text" id="utr-input" name="utr_number" class="form-control mb-2" placeholder="e.g. 123456789012" maxlength="12">
+                    <p style="font-size:.78rem;color:#888">12-digit UTR number from your UPI app payment receipt</p>
+                    <button type="button" class="btn btn-sm w-100" style="background:#28a745;color:#fff;border-radius:8px" onclick="confirmUTR()">
+                      <i class="fas fa-check me-1"></i> Confirm Payment
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Payment confirmed tick -->
+                <div id="upi-confirmed" style="display:none;text-align:center;padding:12px;background:#d4edda;border-radius:10px;margin-top:10px">
+                  <i class="fas fa-check-circle" style="color:#28a745;font-size:2rem"></i>
+                  <p class="fw-bold mb-0 mt-1" style="color:#155724">Payment Confirmed!</p>
+                  <p style="font-size:.82rem;color:#155724;margin:0">UTR: <span id="confirmed-utr"></span></p>
+                </div>
+
+                <input type="hidden" name="upi_confirmed" id="upi-confirmed-flag" value="0">
+              </div>
+            </div>
+            <!-- ── End UPI Panel ── -->
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm" style="border-radius:16px">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Order Summary</h5>
+            {% for item in cart.items.all %}
+            <div class="d-flex justify-content-between mb-2 align-items-start">
+              <div style="flex:1"><span class="small fw-semibold">{{ item.product.name }}</span><span class="text-muted small d-block">x{{ item.quantity }}</span></div>
+              <span class="fw-semibold">₹{{ item.subtotal }}</span>
+            </div>
+            {% endfor %}
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span><span>₹{{ subtotal }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 align-items-center">
+              <span>Delivery Charge</span>
+              {% if delivery_charge == 0 %}
+                <span class="text-success fw-semibold"><i class="fas fa-check-circle me-1"></i>Free</span>
+              {% else %}
+                <span class="fw-semibold">₹{{ delivery_charge }}</span>
+              {% endif %}
+            </div>
+            {% if delivery_charge > 0 %}
+            <div class="mb-3 p-2" style="background:#fff8e1;border-radius:8px;font-size:.82rem;color:#856404">
+              <i class="fas fa-info-circle me-1"></i>Add ₹{{ free_delivery_above }} worth to get <strong>FREE delivery</strong>
+            </div>
+            {% else %}
+            <div class="mb-3 p-2" style="background:#d4edda;border-radius:8px;font-size:.82rem;color:#155724">
+              <i class="fas fa-truck me-1"></i>You have unlocked <strong>FREE delivery!</strong>
+            </div>
+            {% endif %}
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5 mb-4"><span>Grand Total</span><span style="color:#17a2b8">₹{{ grand_total }}</span></div>
+            <button type="submit" id="place-order-btn" class="btn btn-primary-custom w-100 py-2">Place Order <i class="fas fa-arrow-right ms-2"></i></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<style>
+.pay-label{border:2px solid #eee;border-radius:12px;padding:15px;display:block;cursor:pointer;text-align:center;transition:.2s}
+.pay-label:hover{border-color:#17a2b8}
+.pay-label.active{border-color:#17a2b8;background:#e8f8fd}
+</style>
+
+{% endblock %}
+{% block scripts %}
+<script>
+// Highlight selected payment label
+function selectPayment(method, el) {
+  document.querySelectorAll('.pay-label').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelector(`input[value="${method}"]`).checked = true;
+  document.getElementById('upi-panel').style.display = (method === 'upi') ? 'block' : 'none';
+  // reset upi state when switching away
+  if (method !== 'upi') {
+    document.getElementById('upi-confirmed-flag').value = '0';
+  }
+}
+
+// Mark COD as active on load
+document.getElementById('lbl-cod').classList.add('active');
+
+// Copy UPI ID
+function copyUPI() {
+  navigator.clipboard.writeText('kanimedical@upi').then(() => {
+    const msg = document.getElementById('copy-msg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  });
+}
+
+// Simulate clicking a UPI app
+function simulateUPIApp(appName) {
+  document.getElementById('utr-section').style.display = 'block';
+  document.getElementById('selected-app').textContent = appName;
+  document.getElementById('upi-confirmed').style.display = 'none';
+  document.getElementById('upi-confirmed-flag').value = '0';
+  document.getElementById('utr-input').value = '';
+  document.getElementById('utr-section').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// Confirm UTR
+function confirmUTR() {
+  const utr = document.getElementById('utr-input').value.trim();
+  if (utr.length < 6) {
+    alert('Please enter a valid UTR / Transaction ID (minimum 6 digits)');
+    return;
+  }
+  document.getElementById('upi-confirmed').style.display = 'block';
+  document.getElementById('confirmed-utr').textContent = utr;
+  document.getElementById('upi-confirmed-flag').value = '1';
+  document.getElementById('utr-section').style.display = 'none';
+}
+
+// Intercept form submit — warn if UPI selected but not confirmed
+document.getElementById('checkout-form').addEventListener('submit', function(e) {
+  const method = document.querySelector('input[name="payment_method"]:checked').value;
+  if (method === 'upi' && document.getElementById('upi-confirmed-flag').value !== '1') {
+    e.preventDefault();
+    alert('Please complete UPI payment and confirm your Transaction ID before placing the order.');
+    document.getElementById('upi-panel').scrollIntoView({behavior:'smooth'});
+  }
+});
+</script>
+{% endblock %}

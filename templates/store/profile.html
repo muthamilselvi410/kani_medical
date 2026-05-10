@@ -1,0 +1,91 @@
+{% extends 'store/base.html' %}
+{% block title %}Profile - Kani Medical1{% endblock %}
+{% block content %}
+<div class="page-hero py-4"><div class="container"><h2>My Profile</h2></div></div>
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div class="card border-0 shadow-sm text-center" style="border-radius:16px">
+        <div class="card-body p-4">
+          {% if user.profile.avatar %}
+          <img src="{{ user.profile.avatar.url }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;margin-bottom:12px">
+          {% else %}
+          <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#17a2b8,#20c997);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:2.5rem;color:#fff;font-weight:700">{{ user.first_name|first|default:user.username|first }}</div>
+          {% endif %}
+          <h5 class="fw-bold">{{ user.get_full_name|default:user.username }}</h5>
+          <p class="text-muted small">{{ user.email }}</p>
+          <hr>
+          <div class="d-grid gap-2">
+            <a href="#profile-section" class="btn btn-sm btn-outline-primary rounded-pill">Edit Profile</a>
+            <a href="/orders/" class="btn btn-sm btn-outline-primary rounded-pill">My Orders</a>
+            <a href="#address-section" class="btn btn-sm btn-outline-primary rounded-pill">Addresses</a>
+            <a href="/logout/" class="btn btn-sm btn-outline-danger rounded-pill">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <!-- Edit Profile -->
+      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px" id="profile-section">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3">Edit Profile</h5>
+          <form method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">First Name</label>{{ form.first_name }}</div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Last Name</label>{{ form.last_name }}</div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Email</label>{{ form.email }}</div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Phone</label>{{ form.phone }}</div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Date of Birth</label>{{ form.date_of_birth }}</div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Avatar</label>{{ form.avatar }}</div>
+            </div>
+            <button type="submit" class="btn btn-primary-custom mt-3">Save Changes</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Addresses -->
+      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px" id="address-section">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3">Saved Addresses</h5>
+          {% for addr in addresses %}
+          <div class="mb-3 p-3" style="background:#f8f9fa;border-radius:12px;border:1.5px solid #eee">
+            <div class="d-flex justify-content-between">
+              <div><strong>{{ addr.full_name }}</strong> | {{ addr.phone }}<br><span class="text-muted small">{{ addr.address_line1 }}, {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}</span></div>
+              <a href="/profile/delete-address/{{ addr.pk }}/" class="text-danger" onclick="return confirm('Delete address?')"><i class="fas fa-trash-alt"></i></a>
+            </div>
+          </div>
+          {% empty %}<p class="text-muted">No addresses saved.</p>{% endfor %}
+          <h6 class="fw-bold mt-3">Add New Address</h6>
+          <form method="post" action="/profile/add-address/">{% csrf_token %}
+            <div class="row g-2">
+              <div class="col-md-6"><input name="full_name" class="form-control" placeholder="Full Name" required></div>
+              <div class="col-md-6"><input name="phone" class="form-control" placeholder="Phone" required></div>
+              <div class="col-12"><input name="address_line1" class="form-control" placeholder="Address Line 1" required></div>
+              <div class="col-12"><input name="address_line2" class="form-control" placeholder="Address Line 2 (optional)"></div>
+              <div class="col-md-4"><input name="city" class="form-control" placeholder="City" required></div>
+              <div class="col-md-4"><input name="state" class="form-control" placeholder="State" required></div>
+              <div class="col-md-4"><input name="pincode" class="form-control" placeholder="Pincode" required></div>
+            </div>
+            <button type="submit" class="btn btn-outline-primary mt-3 rounded-pill">Add Address</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      {% if notifications %}
+      <div class="card border-0 shadow-sm" style="border-radius:16px">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="fas fa-bell me-2 text-primary"></i>Notifications</h5>
+          {% for notif in notifications %}
+          <div class="mb-2 p-3" style="background:#f0f8ff;border-radius:10px;border-left:3px solid #17a2b8">
+            <p class="mb-0 small">{{ notif.message }}</p>
+            <span class="text-muted" style="font-size:.75rem">{{ notif.created_at|date:"d M Y, h:i A" }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
